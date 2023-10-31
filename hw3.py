@@ -213,7 +213,7 @@ def change_contact(args, contacts: AddressBook):
         for phone in contact.phones:
             phone1 = Phone(phone1)
             if phone1.value == phone.value:
-                phone = Phone(phone2)
+                phone.value = phone2
                 contacts.save_records()
                 return "Phone number updated."
             return "Phone number not found."
