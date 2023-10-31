@@ -100,12 +100,19 @@ class Record:
                 return 'Phone number removed.'
         return 'Phone number not found.'
 
-    def edit_phone(self, phone1, phone2):
-        for p in self.phones:
-            if p.value == phone1:
-                p.value = phone2
-                return 'Phone number added.'
-        return 'Phone number not found.'
+    def edit_phone(self, old_phone, new_phone):
+        try:
+            old_p = Phone(old_phone)
+            new_p = Phone(new_phone)
+
+            for p in self.phones:
+                if p.value == old_p.value:
+                    p.value = new_p.value
+                    return 'Phone number updated.'
+            return 'Phone number not found.'
+
+        except PhoneFormatError as e:
+            return str(e)
 
     def find_phone(self, phone):
         phone = Phone(phone)
@@ -207,18 +214,9 @@ def add_contact(args, contacts: AddressBook):
 
 @input_error
 def change_contact(args, contacts: AddressBook):
-    try:
-        name, phone1, phone2 = args
-        contact = contacts.find(name)
-        for phone in contact.phones:
-            phone1 = Phone(phone1)
-            if phone1.value == phone.value:
-                phone.value = phone2
-                contacts.save_records()
-                return "Phone number updated."
-            return "Phone number not found."
-    except PhoneFormatError as e:
-        return e
+    name, old_p, new_p = args
+    contact = contacts.find(name)
+    return contact.edit_phone(old_p, new_p)
 
 
 @input_error
